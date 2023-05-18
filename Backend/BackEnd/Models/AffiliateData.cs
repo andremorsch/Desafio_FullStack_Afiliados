@@ -2,7 +2,7 @@
 {
     public class AffiliateData
     {
-        public int Id { get; set; }
+        public int Id { get; set; } = 0;
         public string Type { get; set; }
         public DateTime Date { get; set; }
         public string Product { get; set; }
