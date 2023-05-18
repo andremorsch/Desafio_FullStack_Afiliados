@@ -19,7 +19,8 @@ namespace BackEnd.Data
             builder.Property(x => x.Type)
                 .IsRequired()
                 .HasColumnName("Type")
-                .HasColumnType("NVARCHAR");
+                .HasColumnType("INT")
+                .HasMaxLength(1);
 
             builder.Property(x => x.Date)
                 .IsRequired()
@@ -30,7 +31,8 @@ namespace BackEnd.Data
             builder.Property(x => x.Product)
                 .IsRequired()
                 .HasColumnName("Product")
-                .HasColumnType("NVARCHAR");
+                .HasColumnType("NVARCHAR")
+                .HasMaxLength(30);
 
             builder.Property(x => x.Value)
                 .IsRequired()
@@ -40,7 +42,8 @@ namespace BackEnd.Data
             builder.Property(x => x.Seller)
                 .IsRequired()
                 .HasColumnName("Seller")
-                .HasColumnType("NVARCHAR");
+                .HasColumnType("NVARCHAR")
+                .HasMaxLength(20);
         }
     }
 }
