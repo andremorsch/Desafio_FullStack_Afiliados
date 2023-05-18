@@ -1,45 +1,67 @@
-﻿using BackEnd.Models;
+﻿using BackEnd.Data;
+using BackEnd.Models;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Globalization;
 
 namespace BackEnd.Services
 {
     public class FileService
     {
-        public static async Task<List<AffiliateData>?> ProcessFile(TextFile file)
+        public static async Task<ResponseList<AffiliateData>?> ProcessFile(TextFile file, AffiliateDataContext context)
         {
             if (file.File != null)
             {
                 using (var reader = new StreamReader(file.File.OpenReadStream()))
                 {
                     string content = await reader.ReadToEndAsync();
-                    List<AffiliateData> transactions = ExtractTransactions(content);
+                    ResponseList<AffiliateData> transactions = await ExtractTransactions(content, context);
                     return transactions;
                 }
             }
             return null;
         }
 
-        private static List<Transaction> ExtractTransactions(string content)
+        private static async Task<ResponseList<AffiliateData>> ExtractTransactions(
+            string content, AffiliateDataContext context)
         {
-            List<Transaction> transactions = new();
+            ResponseList<AffiliateData> response = new();
 
             string[] lines = content.Split('\n', StringSplitOptions.RemoveEmptyEntries);
 
             foreach (string line in lines)
             {
-                Transaction transaction = new();
-                string[] separetaBySpace = line.Split("  ");
-                transaction.Type = separetaBySpace[0].Substring(0, 1);
-                transaction.Date = DateTime.ParseExact(separetaBySpace[0]
-                    .Substring(1, 25), "yyyy-MM-dd'T'HH:mm:ssK", CultureInfo.InvariantCulture);
-                transaction.Product = separetaBySpace[0].Substring(26).Trim();
-                transaction.Value = decimal.Parse(separetaBySpace.Last().Trim().Substring(0, 10)) / 100;
-                transaction.Seller = separetaBySpace.Last().Trim().Substring(10).Trim();
+                AffiliateData transaction = new();
 
-                transactions.Add(transaction);
+                try
+                {
+                    transaction.Type = int.Parse(line.Substring(0, 1));
+                    transaction.Date = DateTime.ParseExact(line
+                        .Substring(1, 25), "yyyy-MM-dd'T'HH:mm:ssK", CultureInfo.InvariantCulture);
+                    transaction.Product = line.Substring(26, 30).Trim();
+                    transaction.Value = decimal.Parse(line.Substring(56, 10)) / 100;
+                    transaction.Seller = line.Trim().Substring(66).Trim();
+
+                    await context.AffiliateData.AddAsync(transaction);
+                    response.SuccessListResult.Add(transaction);
+                    
+                }
+                catch (ArgumentOutOfRangeException)
+                {
+                    response.ErrorListResult.Add(transaction);
+                    response.Success = Enumerators.EnumSuccess.PARCIAL_SUCCESS;
+                    response.Message.Add("Erro na conversão da linha");
+                }
+                catch (DbUpdateException)
+                {
+                    response.ErrorListResult.Add(transaction);
+                    response.Success = Enumerators.EnumSuccess.PARCIAL_SUCCESS;
+                    response.Message.Add("Erro ao inserir no banco de dados");                 
+                }
             }
+            await context.SaveChangesAsync();
 
-            return transactions;
+            return response;
         }
     }
 }
