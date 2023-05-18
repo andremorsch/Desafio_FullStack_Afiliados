@@ -37,17 +37,19 @@ namespace BackEnd.Migrations
 
                     b.Property<string>("Product")
                         .IsRequired()
+                        .HasMaxLength(30)
                         .HasColumnType("NVARCHAR")
                         .HasColumnName("Product");
 
                     b.Property<string>("Seller")
                         .IsRequired()
+                        .HasMaxLength(20)
                         .HasColumnType("NVARCHAR")
                         .HasColumnName("Seller");
 
-                    b.Property<string>("Type")
-                        .IsRequired()
-                        .HasColumnType("NVARCHAR")
+                    b.Property<int>("Type")
+                        .HasMaxLength(1)
+                        .HasColumnType("INT")
                         .HasColumnName("Type");
 
                     b.Property<decimal>("Value")

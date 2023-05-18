@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace BackEnd.Migrations
 {
     /// <inheritdoc />
-    public partial class CreateTableAffiliate : Migration
+    public partial class CreateAffiliateDatabase : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -17,11 +17,11 @@ namespace BackEnd.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Type = table.Column<string>(type: "NVARCHAR", nullable: false),
+                    Type = table.Column<int>(type: "INT", maxLength: 1, nullable: false),
                     Date = table.Column<DateTime>(type: "SMALLDATETIME", maxLength: 60, nullable: false),
-                    Product = table.Column<string>(type: "NVARCHAR", nullable: false),
+                    Product = table.Column<string>(type: "NVARCHAR(30)", maxLength: 30, nullable: false),
                     Value = table.Column<decimal>(type: "DECIMAL(18,2)", nullable: false),
-                    Seller = table.Column<string>(type: "NVARCHAR", nullable: false)
+                    Seller = table.Column<string>(type: "NVARCHAR(20)", maxLength: 20, nullable: false)
                 },
                 constraints: table =>
                 {
