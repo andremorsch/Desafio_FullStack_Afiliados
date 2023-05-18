@@ -5,14 +5,14 @@ namespace BackEnd.Services
 {
     public class FileService
     {
-        public static async Task<List<Transaction>?> ProcessFile(TextFile file)
+        public static async Task<List<AffiliateData>?> ProcessFile(TextFile file)
         {
             if (file.File != null)
             {
                 using (var reader = new StreamReader(file.File.OpenReadStream()))
                 {
                     string content = await reader.ReadToEndAsync();
-                    List<Transaction> transactions = ExtractTransactions(content);
+                    List<AffiliateData> transactions = ExtractTransactions(content);
                     return transactions;
                 }
             }
