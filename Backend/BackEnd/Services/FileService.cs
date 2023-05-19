@@ -46,20 +46,29 @@ namespace BackEnd.Services
                     response.SuccessListResult.Add(transaction);
                     
                 }
-                catch (ArgumentOutOfRangeException)
+                catch (FormatException)
                 {
-                    response.ErrorListResult.Add(transaction);
-                    response.Success = Enumerators.EnumSuccess.PARCIAL_SUCCESS;
+                    response.ErrorListResult.Add(line);
+                    response.Success = Enumerators.EnumSuccess.PARTIAL_SUCCESS;
                     response.Message.Add("Erro na conversão da linha");
                 }
                 catch (DbUpdateException)
                 {
-                    response.ErrorListResult.Add(transaction);
-                    response.Success = Enumerators.EnumSuccess.PARCIAL_SUCCESS;
+                    response.ErrorListResult.Add(line);
+                    response.Success = Enumerators.EnumSuccess.PARTIAL_SUCCESS;
                     response.Message.Add("Erro ao inserir no banco de dados");                 
+                }
+                catch (ArgumentOutOfRangeException)
+                {
+                    response.ErrorListResult.Add(line);
+                    response.Success = Enumerators.EnumSuccess.PARTIAL_SUCCESS;
+                    response.Message.Add("Erro na conversão da linha");
                 }
             }
             await context.SaveChangesAsync();
+
+            if (response.SuccessListResult.Count == 0)
+                response.Success = Enumerators.EnumSuccess.TOTAL_FAILURE;
 
             return response;
         }
