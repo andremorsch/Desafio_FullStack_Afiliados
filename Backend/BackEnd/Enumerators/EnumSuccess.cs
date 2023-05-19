@@ -7,7 +7,7 @@ namespace BackEnd.Enumerators
         [Description("Sucesso total")]
         TOTAL_SUCCESS,
         [Description("Sucesso parcial")]
-        PARCIAL_SUCCESS,
+        PARTIAL_SUCCESS,
         [Description("Falha Total")]
         TOTAL_FAILURE
     }
