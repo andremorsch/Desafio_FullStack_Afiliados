@@ -20,10 +20,13 @@ namespace BackEnd.Controllers
             {
                 var response = await FileService.ProcessFile(file, context);
 
-                if (response.Success != EnumSuccess.TOTAL_FAILURE)
-                    return Ok();
+                if (response.Success == EnumSuccess.TOTAL_SUCCESS)
+                    return Ok(response);
 
-                return BadRequest("Nenhuma linha foi válida");
+                if (response.Success == EnumSuccess.PARTIAL_SUCCESS)
+                    return StatusCode(206, response);
+
+                return BadRequest(response);
             }
 
             return BadRequest("Nenhum arquivo enviado");
