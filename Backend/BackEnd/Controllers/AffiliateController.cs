@@ -3,6 +3,7 @@ using BackEnd.Enumerators;
 using BackEnd.Models;
 using BackEnd.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Runtime.Intrinsics;
 
 namespace BackEnd.Controllers
@@ -10,7 +11,7 @@ namespace BackEnd.Controllers
     [ApiController]
     public class AffiliateController : ControllerBase
     {
-        [HttpPost("v1/processFile/")]
+        [HttpPost("v1/file")]
         public async Task<IActionResult> ProcessFile(
             [FromForm] TextFile file,
             [FromServices] AffiliateDataContext context)
@@ -26,6 +27,25 @@ namespace BackEnd.Controllers
             }
 
             return BadRequest("Nenhum arquivo enviado");
+        }
+
+        [HttpGet("v1/files")]
+        public async Task<IActionResult> GetAll(
+            [FromServices] AffiliateDataContext context)
+        {
+            try
+            {
+                var result = await context.AffiliateData.ToListAsync();
+
+                if (result.Count == 0)
+                    return NotFound("Nenhum arquivo encontrado");
+
+                return Ok(result);
+            }
+            catch
+            {
+                return BadRequest("Erro ao buscar dados no banco de dados");
+            }
         }
     }
 }
