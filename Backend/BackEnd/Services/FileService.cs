@@ -49,28 +49,58 @@ namespace BackEnd.Services
                 catch (FormatException)
                 {
                     response.ErrorListResult.Add(line);
-                    response.Success = Enumerators.EnumSuccess.PARTIAL_SUCCESS;
+                    response.Success = Enumerators.EnumSuccess.PARTIAL_SUCCESS.ToString();
                     response.Message.Add("Erro na conversão da linha");
                 }
                 catch (DbUpdateException)
                 {
                     response.ErrorListResult.Add(line);
-                    response.Success = Enumerators.EnumSuccess.PARTIAL_SUCCESS;
+                    response.Success = Enumerators.EnumSuccess.PARTIAL_SUCCESS.ToString();
                     response.Message.Add("Erro ao inserir no banco de dados");                 
                 }
                 catch (ArgumentOutOfRangeException)
                 {
                     response.ErrorListResult.Add(line);
-                    response.Success = Enumerators.EnumSuccess.PARTIAL_SUCCESS;
+                    response.Success = Enumerators.EnumSuccess.PARTIAL_SUCCESS.ToString();
                     response.Message.Add("Erro na conversão da linha");
                 }
             }
             await context.SaveChangesAsync();
 
             if (response.SuccessListResult.Count == 0)
-                response.Success = Enumerators.EnumSuccess.TOTAL_FAILURE;
+                response.Success = Enumerators.EnumSuccess.TOTAL_FAILURE.ToString();
 
             return response;
+        }
+
+        public static  ResponseList<List<IGrouping<string, AffiliateData>>> GetAllGroupedSeller(
+            AffiliateDataContext context)
+        {
+            ResponseList<List<IGrouping<string, AffiliateData>>> response = new();
+            try
+            {
+                List<IGrouping<string, AffiliateData>> transactionGroup =
+                    context.AffiliateData.GroupBy(x => x.Seller).ToList();
+
+                if (transactionGroup.Count == 0)
+                {
+                    response.Success = Enumerators.EnumSuccess.TOTAL_FAILURE.ToString();
+                    response.Message.Add("Nenhum registro encontrado");
+                    return response;
+                }
+
+                response.Success = Enumerators.EnumSuccess.TOTAL_SUCCESS.ToString();
+                response.SuccessListResult.Add(transactionGroup);
+
+                return response;
+            }
+            catch (Exception ex)
+            {
+                response.Success = Enumerators.EnumSuccess.TOTAL_FAILURE.ToString();
+                response.Message.Add(ex.Message);
+
+                return response;
+            }
         }
     }
 }
