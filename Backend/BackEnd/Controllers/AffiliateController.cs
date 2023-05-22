@@ -20,10 +20,10 @@ namespace BackEnd.Controllers
             {
                 var response = await FileService.ProcessFile(file, context);
 
-                if (response.Success == EnumSuccess.TOTAL_SUCCESS)
+                if (response.Success == EnumSuccess.TOTAL_SUCCESS.ToString())
                     return Ok(response);
 
-                if (response.Success == EnumSuccess.PARTIAL_SUCCESS)
+                if (response.Success == EnumSuccess.PARTIAL_SUCCESS.ToString())
                     return StatusCode(206, response);
 
                 return BadRequest(response);
@@ -38,7 +38,7 @@ namespace BackEnd.Controllers
         {
             try
             {
-                var result = await context.AffiliateData.ToListAsync();
+                var result = await context.AffiliateData.OrderBy(x => x.Seller).ToListAsync();
 
                 if (result.Count == 0)
                     return NotFound("Nenhum arquivo encontrado");
@@ -49,6 +49,21 @@ namespace BackEnd.Controllers
             {
                 return BadRequest("Erro ao buscar dados no banco de dados");
             }
+        }
+
+        [HttpGet("v1/filesGroupSeller")]
+        public async Task<IActionResult> GetAllGroupedSeller(
+            [FromServices] AffiliateDataContext context)
+        {
+            var result  = FileService.GetAllGroupedSeller(context);
+
+            if (result.Message.FirstOrDefault() == "Nenhum registro encontrado")
+                return NotFound(result);
+
+            if (result.Success == EnumSuccess.TOTAL_FAILURE.ToString())
+                return BadRequest(result);
+
+            return Ok(result);
         }
     }
 }
