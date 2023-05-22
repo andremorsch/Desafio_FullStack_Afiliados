@@ -1,7 +1,10 @@
+import Home from './pages/Home';
+import 'bootstrap/dist/css/bootstrap.min.css';
+
 function App() {
   return (
     <div>
-      <h1>React App</h1>
+      <Home />
     </div>
   );
 }
